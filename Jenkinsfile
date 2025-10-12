@@ -33,23 +33,23 @@ pipeline{
                 }
             }
         }
-        stage('Building and Pushing Docker Image to AWS ECR') {
+        stage('Building and Pushing Podman Image to AWS ECR') {
             steps {
                 withCredentials([file(credentialsId: 'AWSKey', variable: 'AWS_APPLICATION_CREDENTIALS')]) {
                     script {
-                        echo 'Building and Pushing Docker Image to AWS ECR'
+                        echo 'Building and Pushing Podman Image to AWS ECR'
                          // The full URI used for tagging and pushing
                         def repositoryUri = "${ECR_REGISTRY_URL}/${REPOSITORY_NAME}:${IMAGE_TAG}"
                         sh '''
-                        export PATH=$PATH:$(AWS_PATH)
+                        export PATH=$PATH:${AWS_PATH}
                         
                         # 1. Log in to the ECR Registry URL (the domain part)
                         aws ecr get-login-password --region ${AWS_REGION} | podman login --username AWS --password-stdin ${ECR_REGISTRY_URL}
                     
-                        # 2. Build and tag the image using Podman (command is identical to Docker)
+                        # 2. Build and tag the image using Podman 
                         podman build -t ${repositoryUri} .
 
-                        # 3. Push the image to ECR using Podman (command is identical to Docker)
+                        # 3. Push the image to ECR using Podman 
                         podman push ${repositoryUri}
                         '''
                     }
