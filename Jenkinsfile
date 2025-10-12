@@ -43,10 +43,13 @@ pipeline{
                         sh '''
                         export PATH=$PATH:${AWS_PATH}
                         
-                        # 1. Build and tag the image using Podman 
+                        # 1. Log in to the ECR Registry URL (the domain part)
+                        aws ecr get-login-password --region ${AWS_REGION} | podman login --username AWS --password-stdin ${ECR_REGISTRY_URL}
+                    
+                        # 2. Build and tag the image using Podman 
                         podman build -t ${repositoryUri} .
 
-                        # 2. Push the image to ECR using Podman
+                        # 3. Push the image to ECR using Podman 
                         podman push ${repositoryUri}
                         '''
                     }
