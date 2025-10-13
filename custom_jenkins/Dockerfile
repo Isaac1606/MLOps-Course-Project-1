@@ -11,7 +11,7 @@ RUN apt-get update -y && \
 
 # Add Jenkins user to the Podman group
 RUN groupadd -f podman && \
-RUN usermod -aG podman jenkins
+    usermod -aG podman jenkins
 
 # Configure storage for Podman
 RUN mkdir -p /var/lib/containers && \
