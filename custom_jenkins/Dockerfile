@@ -9,17 +9,13 @@ RUN apt-get update -y && \
     apt-get install -y apt-transport-https ca-certificates curl gnupg software-properties-common podman && \
     apt-get clean
 
-# Configure Podman for rootless operation
-RUN mkdir -p /home/jenkins/.config/containers && \
-    chown -R jenkins:jenkins /home/jenkins/.config
+# Add Jenkins user to the Podman group
+RUN groupadd -f podman && \
+RUN usermod -aG podman jenkins
 
 # Configure storage for Podman
 RUN mkdir -p /var/lib/containers && \
     chown -R jenkins:jenkins /var/lib/containers
-
-# Add subuid and subgid mappings for jenkins user (required for rootless Podman)
-RUN echo "jenkins:100000:65536" >> /etc/subuid && \
-    echo "jenkins:100000:65536" >> /etc/subgid
 
 # Configure Podman to use the correct storage driver
 RUN mkdir -p /etc/containers && \
