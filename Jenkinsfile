@@ -6,7 +6,7 @@ pipeline{
         AWS_PATH = '/usr/local/bin/aws'
         AWS_REGION = 'us-east-2'
         REPOSITORY_NAMESPACE = 'courses'
-        PROJECT_NAME = 'mlproject-1'
+        PROJECT_NAME = 'ml-project-1'
         IMAGE_TAG = 'latest'
         REPOSITORY_NAME = "${REPOSITORY_NAMESPACE}/${PROJECT_NAME}"
         ECR_REGISTRY_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
