@@ -21,8 +21,8 @@ COPY . .
 # We install the application
 RUN pip install --no-cache-dir -e .
 
-# We run the training script
-RUN python pipeline/training.py
+# We run the training pipeline script
+RUN python pipeline/training_pipeline.py
 
 # We expose the port the app runs on
 EXPOSE 5000
