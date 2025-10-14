@@ -55,5 +55,32 @@ pipeline{
                 }
             }
         }
+        stage('Deploy to AWS ECS') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'my-aws-credentials']]) {
+                    script {
+                        echo 'Deploying to AWS ECS.............'
+                        sh '''
+                        export PATH=$PATH:${AWS_PATH}
+                        
+                        # Update ECS service with the new image
+                        aws ecs update-service \
+                            --cluster mlops-cluster \
+                            --service mlops-service \
+                            --force-new-deployment \
+                            --region ${AWS_REGION}
+                        
+                        # Wait for the service to stabilize
+                        aws ecs wait services-stable \
+                            --cluster mlops-cluster \
+                            --services mlops-service \
+                            --region ${AWS_REGION}
+                        
+                        echo 'ECS deployment completed successfully'
+                        '''
+                    }
+                }
+            }
+        }
     }
 }
