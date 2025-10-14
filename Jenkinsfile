@@ -35,7 +35,7 @@ pipeline{
         }
         stage('Building and Pushing Podman Image to AWS ECR') {
             steps {
-                withCredentials([file(credentialsId: 'AWSKey', variable: 'AWS_APPLICATION_CREDENTIALS')]) {
+                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'my-aws-credentials']]) {
                     script {
                         echo 'Building and Pushing Podman Image to AWS ECR'
                          // The full URI used for tagging and pushing
