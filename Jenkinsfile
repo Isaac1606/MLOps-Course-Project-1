@@ -71,6 +71,7 @@ pipeline{
                             --cluster ${ECS_CLUSTER_NAME} \
                             --service ${ECS_SERVICE_NAME} \
                             --force-new-deployment \
+                            --desired-count 1 \
                             --region ${AWS_REGION}
                         
                         # Wait for the service to stabilize
@@ -80,7 +81,7 @@ pipeline{
                             --region ${AWS_REGION}
                         
                         echo 'ECS deployment completed successfully'
-                        
+
                         # Get the latest task ARN
                         TASK_ARN=$(aws ecs list-tasks \
                             --cluster ${ECS_CLUSTER_NAME} \
