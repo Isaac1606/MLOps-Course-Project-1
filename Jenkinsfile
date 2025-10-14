@@ -7,10 +7,10 @@ pipeline{
         AWS_REGION = 'us-east-2'
         REPOSITORY_NAMESPACE = 'courses'
         PROJECT_NAME = 'mlproject-1'
-        REPOSITORY_NAME = '${REPOSITORY_NAMESPACE}/${PROJECT_NAME}'
         IMAGE_TAG = 'latest'
-        ECR_REGISTRY_URL = '${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com'
-        REPOSITORY_URI = '${ECR_REGISTRY_URL}/${REPOSITORY_NAME}:${IMAGE_TAG}'
+        REPOSITORY_NAME = "${REPOSITORY_NAMESPACE}/${PROJECT_NAME}"
+        ECR_REGISTRY_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        REPOSITORY_URI = "${ECR_REGISTRY_URL}/${REPOSITORY_NAME}:${IMAGE_TAG}"
     }
     stages {
         stage('Cloning Github repo to Jenkins') {
