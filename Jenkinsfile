@@ -8,6 +8,8 @@ pipeline{
         REPOSITORY_NAMESPACE = 'courses'
         PROJECT_NAME = 'ml-project-1'
         IMAGE_TAG = 'latest'
+        ECS_CLUSTER_NAME = 'mlops-cluster'
+        ECS_SERVICE_NAME = 'ml-project-service'
         REPOSITORY_NAME = "${REPOSITORY_NAMESPACE}/${PROJECT_NAME}"
         ECR_REGISTRY_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
         REPOSITORY_URI = "${ECR_REGISTRY_URL}/${REPOSITORY_NAME}:${IMAGE_TAG}"
@@ -65,15 +67,15 @@ pipeline{
                         
                         # Update ECS service with the new image
                         aws ecs update-service \
-                            --cluster mlops-cluster \
-                            --service mlops-service \
+                            --cluster ${ECS_CLUSTER_NAME} \
+                            --service ${ECS_SERVICE_NAME} \
                             --force-new-deployment \
                             --region ${AWS_REGION}
                         
                         # Wait for the service to stabilize
                         aws ecs wait services-stable \
-                            --cluster mlops-cluster \
-                            --services mlops-service \
+                            --cluster ${ECS_CLUSTER_NAME} \
+                            --services ${ECS_SERVICE_NAME} \
                             --region ${AWS_REGION}
                         
                         echo 'ECS deployment completed successfully'
