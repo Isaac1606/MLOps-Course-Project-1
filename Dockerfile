@@ -10,6 +10,8 @@ WORKDIR /app
 # Install all the dependencies that are needed for libgomp1
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
+    cmake \
+    build-essential \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
