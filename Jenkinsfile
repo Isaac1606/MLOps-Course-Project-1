@@ -10,6 +10,7 @@ pipeline{
         REPOSITORY_NAME = '${REPOSITORY_NAMESPACE}/${PROJECT_NAME}'
         IMAGE_TAG = 'latest'
         ECR_REGISTRY_URL = '${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com'
+        REPOSITORY_URI = '${ECR_REGISTRY_URL}/${REPOSITORY_NAME}:${IMAGE_TAG}'
     }
     stages {
         stage('Cloning Github repo to Jenkins') {
@@ -38,8 +39,6 @@ pipeline{
                  withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'my-aws-credentials']]) {
                     script {
                         echo 'Building and Pushing Podman Image to AWS ECR'
-                         // The full URI used for tagging and pushing
-                        def repositoryUri = "${ECR_REGISTRY_URL}/${REPOSITORY_NAME}:${IMAGE_TAG}"
                         sh '''
                         export PATH=$PATH:${AWS_PATH}
                         
@@ -47,10 +46,10 @@ pipeline{
                         aws ecr get-login-password --region ${AWS_REGION} | podman login --username AWS --password-stdin ${ECR_REGISTRY_URL}
                     
                         # 2. Build and tag the image using Podman 
-                        podman build -t ${repositoryUri} .
+                        podman build -t ${REPOSITORY_URI} .
 
                         # 3. Push the image to ECR using Podman 
-                        podman push ${repositoryUri}
+                        podman push ${REPOSITORY_URI}
                         '''
                     }
                 }
