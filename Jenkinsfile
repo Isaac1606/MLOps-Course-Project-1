@@ -8,11 +8,12 @@ pipeline{
         REPOSITORY_NAMESPACE = 'courses'
         PROJECT_NAME = 'ml-project-1'
         IMAGE_TAG = 'latest'
-        ECS_CLUSTER_NAME = 'mlops-cluster'
-        ECS_SERVICE_NAME = 'ml-project-service'
         REPOSITORY_NAME = "${REPOSITORY_NAMESPACE}/${PROJECT_NAME}"
         ECR_REGISTRY_URL = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
         REPOSITORY_URI = "${ECR_REGISTRY_URL}/${REPOSITORY_NAME}:${IMAGE_TAG}"
+        ECS_CLUSTER_NAME = 'mlops-cluster'
+        ECS_SERVICE_NAME = 'ml-project-service'
+        APP_PORT = '5001'
     }
     stages {
         stage('Cloning Github repo to Jenkins') {
@@ -79,6 +80,39 @@ pipeline{
                             --region ${AWS_REGION}
                         
                         echo 'ECS deployment completed successfully'
+                        
+                        # Get the latest task ARN
+                        TASK_ARN=$(aws ecs list-tasks \
+                            --cluster ${ECS_CLUSTER_NAME} \
+                            --service-name ${ECS_SERVICE_NAME} \
+                            --region ${AWS_REGION} \
+                            --desired-status RUNNING \
+                            --query "taskArns[-1]" \
+                            --output text)
+
+                        echo "Found running ECS task: $TASK_ARN"
+
+                        # Get the network interface ID (ENI)
+                        ENI_ID=$(aws ecs describe-tasks \
+                            --cluster ${ECS_CLUSTER_NAME} \
+                            --tasks $TASK_ARN \
+                            --region ${AWS_REGION} \
+                            --query "tasks[0].attachments[0].details[?name=='networkInterfaceId'].value" \
+                            --output text)
+
+                        echo "Network Interface ID: $ENI_ID"
+
+                        # Get the public IP associated with the ENI
+                        PUBLIC_IP=$(aws ec2 describe-network-interfaces \
+                            --network-interface-ids $ENI_ID \
+                            --region ${AWS_REGION} \
+                            --query "NetworkInterfaces[0].Association.PublicIp" \
+                            --output text)
+
+                        echo "======================================================="
+                        echo "✅ Deployment Successful!"
+                        echo "🌐 Your app is accessible at: http://$PUBLIC_IP:${APP_PORT}"
+                        echo "======================================================="
                         '''
                     }
                 }
