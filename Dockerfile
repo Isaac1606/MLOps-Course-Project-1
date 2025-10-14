@@ -1,5 +1,5 @@
 # We import the python slim 
-FROM python:slim 
+FROM python:3.12-slim
 
 # Avoid overwritting the files and buffering 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     cmake \
     build-essential \
+    libarrow-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
